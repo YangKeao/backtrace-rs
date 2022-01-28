@@ -304,7 +304,7 @@ mod external_unwind {
     pub struct UnwindError(libc::c_int);
 
     impl Display for UnwindError {
-        fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
             write!(f, "unwind failed with code: {}", self.0)
         }
     }
@@ -339,7 +339,7 @@ mod external_unwind {
     impl UnwProcInfo {
         fn new() -> Self {
             UnwProcInfo {
-                start_ip: std::ptr::null_mut(),
+                start_ip: core::ptr::null_mut(),
                 __padding: [0; 16],
             }
         }
@@ -471,8 +471,8 @@ mod external_unwind {
         }
         pub(crate) fn get_frame(&mut self) -> Result<super::Frame, UnwindError> {
             let mut proc_info = UnwProcInfo::new();
-            let mut ip: *mut c_void = std::ptr::null_mut();
-            let mut sp: *mut c_void = std::ptr::null_mut();
+            let mut ip: *mut c_void = core::ptr::null_mut();
+            let mut sp: *mut c_void = core::ptr::null_mut();
             unsafe {
                 let mut res = unw_get_proc_info(self as _, &mut proc_info as _);
                 if res != 0 {
