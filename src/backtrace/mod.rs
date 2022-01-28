@@ -66,6 +66,11 @@ pub unsafe fn trace_unsynchronized<F: FnMut(&Frame) -> bool>(mut cb: F) {
     trace_imp(&mut cb)
 }
 
+#[cfg(any(feature = "llvm-unwind", feature = "nongnu-unwind"))]
+pub unsafe fn trace_unsynchronized_external_api<F: FnMut(&Frame) -> bool>(mut cb: F, signal_frame: bool) {
+    trace_imp_external_api(&mut cb, signal_frame)
+}
+
 /// A trait representing one frame of a backtrace, yielded to the `trace`
 /// function of this crate.
 ///
@@ -147,6 +152,8 @@ cfg_if::cfg_if! {
     )] {
         mod libunwind;
         use self::libunwind::trace as trace_imp;
+        #[cfg(any(feature = "llvm-unwind", feature = "nongnu-unwind"))]
+        use self::libunwind::trace_external_api as trace_imp_external_api;
         pub(crate) use self::libunwind::Frame as FrameImp;
     } else if #[cfg(all(windows, not(target_vendor = "uwp")))] {
         mod dbghelp;
