@@ -7,6 +7,17 @@ fn main() {
         "android" => build_android(),
         _ => {}
     }
+
+    if cfg!(feature = "llvm-unwind") || cfg!(feature = "nongnu-unwind") {
+        for i in std::env::var("LIBUNWIND_SEARCH_PATH").ok() {
+            println!("cargo:rustc-link-search=native={}", i)
+        }
+        println!("cargo:rustc-link-lib=unwind")
+    }
+
+    if cfg!(feature = "nongnu-unwind") && cfg!(target_arch = "aarch64") {
+        panic!("nongnu-unwind with aarch64 is not supported")
+    }
 }
 
 fn build_android() {

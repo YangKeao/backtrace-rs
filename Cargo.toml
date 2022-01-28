@@ -74,6 +74,11 @@ serialize-rustc = ["rustc-serialize"]
 serialize-serde = ["serde"]
 
 #=======================================
+# Use extern APIs for unwinding
+llvm-unwind = []
+nongnu-unwind = []
+
+#=======================================
 # Deprecated/internal features
 #
 # Only here for backwards compatibility purposes or for internal testing
