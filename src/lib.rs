@@ -111,6 +111,10 @@ extern crate std;
 extern crate alloc;
 
 pub use self::backtrace::{trace_unsynchronized, Frame};
+
+#[cfg(any(feature = "llvm-unwind", feature = "nongnu-unwind"))]
+pub use self::backtrace::trace_unsynchronized_external_api;
+
 mod backtrace;
 
 pub use self::symbolize::resolve_frame_unsynchronized;
