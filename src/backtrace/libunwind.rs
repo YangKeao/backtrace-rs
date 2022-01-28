@@ -121,19 +121,27 @@ pub unsafe fn trace_external_api<F: FnMut(&super::Frame) -> bool>(mut f: F, sign
     match UnwContext::new()
         .and_then(|mut x| { x.cursor(signal_frame) })
         .and_then(|mut x| {
-            while let Ok(frame) = x.get_frame() {
-                let frame = super::Frame {
-                    inner: frame,
-                };
-                let mut bomb = Bomb { enabled: true };
-                let keep_going = f(&frame);
-                bomb.enabled = false;
-                if !keep_going {
-                    break;
-                }
-                match x.step() {
-                    StepResult::Success => continue,
-                    _ => break
+            loop {
+                match x.get_frame() {
+                    Ok(frame) => {
+                        let frame = super::Frame {
+                            inner: frame,
+                        };
+                        let mut bomb = Bomb { enabled: true };
+                        let keep_going = f(&frame);
+                        bomb.enabled = false;
+                        if !keep_going {
+                            break;
+                        }
+                        match x.step() {
+                            StepResult::Success => continue,
+                            StepResult::Error(err) => panic!("{}", err),
+                            _ => break
+                        }
+                    }
+                    Err(err) => {
+                        panic!("{}", err);
+                    }
                 }
             }
             Ok(())
@@ -404,7 +412,7 @@ mod external_unwind {
 
     #[cfg(target_arch = "aarch64")]
     extern "C" {
-        #[cfg_attr(feature = "nongnu-unwind", link_name = "_Uaarch64_getcontext")]
+        #[cfg_attr(feature = "nongnu-unwind", link_name = "getcontext")]
         fn unw_getcontext(context: *mut UnwContext) -> libc::c_int;
 
         #[cfg_attr(feature = "nongnu-unwind", link_name = "_ULaarch64_init_local")]
@@ -476,7 +484,8 @@ mod external_unwind {
             unsafe {
                 let mut res = unw_get_proc_info(self as _, &mut proc_info as _);
                 if res != 0 {
-                    return Err(UnwindError(res));
+                    // TODO: handle this error
+                    // in signal frame, this function always return error
                 }
                 res = unw_get_reg(self as _, UNW_REG_IP, &mut ip as _);
                 if res != 0 {

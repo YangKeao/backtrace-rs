@@ -15,9 +15,6 @@ fn main() {
         println!("cargo:rustc-link-lib=unwind")
     }
 
-    if cfg!(feature = "nongnu-unwind") && cfg!(target_arch = "aarch64") {
-        panic!("nongnu-unwind with aarch64 is not supported")
-    }
 }
 
 fn build_android() {

@@ -66,6 +66,7 @@ pub unsafe fn trace_unsynchronized<F: FnMut(&Frame) -> bool>(mut cb: F) {
     trace_imp(&mut cb)
 }
 
+/// trace_unsynchronized_external_api
 #[cfg(any(feature = "llvm-unwind", feature = "nongnu-unwind"))]
 pub unsafe fn trace_unsynchronized_external_api<F: FnMut(&Frame) -> bool>(mut cb: F, signal_frame: bool) {
     trace_imp_external_api(&mut cb, signal_frame)
