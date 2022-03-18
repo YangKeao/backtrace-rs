@@ -58,6 +58,8 @@ cc = "1.0.67"
 [dev-dependencies]
 dylib-dep = { path = "crates/dylib-dep" }
 libloading = "0.7"
+nix = "0.23"
+rand = "0.8"
 
 [features]
 # By default libstd support and gimli-symbolize is used to symbolize addresses.
